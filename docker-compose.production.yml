@@ -15,7 +15,7 @@ services:
       - DB_DATABASE=domain_monitor
       - DB_USERNAME=techipe
       - DB_PASSWORD=%8nfWkebA*$#xfmDB2Pz
-      - APP_URL=https://domains.techipe.africa
+      - APP_URL=http://domains.techipe.africa
       - APP_TIMEZONE=UTC
     depends_on:
       - mysql
