@@ -14,7 +14,7 @@ services:
       - DB_PORT=3306
       - DB_DATABASE=domain_monitor
       - DB_USERNAME=techipe
-      - DB_PASSWORD=%8nfWkebA*$#xfmDB2Pz
+      - DB_PASSWORD=PR5r2tgooZTtWT4KzoPG
       - APP_URL=http://domains.techipe.africa
       - APP_TIMEZONE=UTC
     depends_on:
@@ -29,12 +29,12 @@ services:
   # MySQL Database
   mysql:
     image: mysql:8.0
-    container_name: domain-monitor-mysql
+    container_name: domain-monitoring-domainmonitor-akyl9w
     environment:
-      - MYSQL_ROOT_PASSWORD=%8nfWkebA*$#xfmDB2Pz
+      - MYSQL_ROOT_PASSWORD=PR5r2tgooZTtWT4KzoPG
       - MYSQL_DATABASE=domain_monitor
       - MYSQL_USER=techcipe
-      - MYSQL_PASSWORD=%8nfWkebA*$#xfmDB2Pz
+      - MYSQL_PASSWORD=PR5r2tgooZTtWT4KzoPG
     volumes:
       - mysql_data:/var/lib/mysql
     ports:
