@@ -145,8 +145,7 @@ class SearchController extends Controller
      */
     private function isDomainFormat(string $query): bool
     {
-        // Basic domain validation
-        return preg_match('/^[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}$/i', $query);
+        return preg_match('/^[a-z0-9]+([\-\.]{1}[a-z0-9]+)*(\.[a-z]{2,})+$/i', $query);
     }
 }
 

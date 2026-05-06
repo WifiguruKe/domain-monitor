@@ -51,6 +51,7 @@ class InputValidator
     /**
      * Validate that a domain is a registrable root domain (not a subdomain).
      * Uses the tld_registry table to identify multi-level TLDs like .co.uk.
+     * Also handles country-code TLDs with common second-level domains (SLDs) like .co.ke.
      *
      * @return array{valid: bool, domain: string, error: string|null}
      */
@@ -90,6 +91,15 @@ class InputValidator
         }
 
         if ($labelCount !== 1) {
+            $sldSecondPart = $parts[1] ?? '';
+            $sldTldPart = $parts[count($parts) - 1] ?? '';
+            $potentialSld = strtolower($sldSecondPart . '.' . $sldTldPart);
+            $sldRecord = $tldModel->findByTld('.' . $potentialSld);
+            
+            if ($sldRecord || self::isKnownSld($sldSecondPart, $sldTldPart)) {
+                return ['valid' => true, 'domain' => $domain, 'error' => null];
+            }
+
             $rootDomain = $parts[$labelCount - 1] . $matchedTld;
             return [
                 'valid' => false,
@@ -99,6 +109,35 @@ class InputValidator
         }
 
         return ['valid' => true, 'domain' => $domain, 'error' => null];
+    }
+
+    /**
+     * Check if a combination of second part + TLD is a known second-level domain (SLD).
+     * This handles country-code TLDs like .co.ke, .or.ug, .ne.tz, etc.
+     */
+    private static function isKnownSld(string $secondPart, string $tldPart): bool
+    {
+        $commonSlds = ['co', 'or', 'ne', 'ac', 'go', 'sa', 'com', 'org', 'net'];
+        $sldTlds = [
+            'ke', 'ug', 'tz', 'zm', 'mw', 'bw', 'na', 'sz', 'ls', 'gh',
+            'ng', 'et', 'sn', 'ci', 'bf', 'ml', 'tg', 'bj', 'gh', 'lr',
+            'sl', 'gm', 'gm', 'ga', 'cg', 'cd', 'ao', 'mz', 'zw', 'bi',
+            'rw', 'km', 'dj', 'er', 'so', 'sc', 'sd', 'ma', 'tn', 'ly',
+            'dz', 'eg', 'jo', 'lb', 'sy', 'iq', 'ir', 'sa', 'ye', 'om',
+            'ae', 'kw', 'qa', 'bh', 'pk', 'af', 'bd', 'in', 'np', 'lk',
+            'mm', 'kh', 'la', 'th', 'vn', 'my', 'sg', 'id', 'ph', 'tw',
+            'hk', 'mo', 'cn', 'jp', 'kr', 'au', 'nz', 'fj', 'pg', 'vu',
+            'ws', 'to', 'ck', 'nu', 'ki', 'nr', 'tv', 'pw', 'fm', 'gu'
+        ];
+        
+        $secondPartLower = strtolower($secondPart);
+        $tldPartLower = strtolower($tldPart);
+        
+        if (in_array($secondPartLower, $commonSlds) && in_array($tldPartLower, $sldTlds)) {
+            return true;
+        }
+        
+        return false;
     }
 
     /**
